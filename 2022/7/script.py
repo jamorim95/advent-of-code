@@ -8,96 +8,112 @@ CD_COMMAND_REGEX = r"\$ cd (.*)"
 CD_COMMAND_BACK = ".."
 LS_COMMAND_REGEX = r"\$ ls"
 FILE_RES_REGEX = r"([0-9]+) (.*)"
-DIR_RES_REGEX = r"dir (.*)"
-def main(filename: str="input.txt", size_threshold: int=100000) -> int:
+def main(filename: str="input.txt") -> int:
 	_input = fetch_input(filename=filename)
+	res = 0
 
-	row = _input[0]
-	cd_regex_res = re.search(CD_COMMAND_REGEX, row)
-	_filesystem = check_folder(
-		_input=_input,
-		curr_folder=cd_regex_res.group(1),
-		idx=0,
-		filesystem={"folders": {}},
-		parent_keys=[]
-	)
+	_filesystem = build_init_filesystem(_input=_input)
+	for folder_key in _filesystem["folders"]:
+		update_init_filesystem(_filesystem=_filesystem['folders'][folder_key])
+		res += sum_prices_greater_than_threshold(_filesystem=_filesystem['folders'][folder_key])
 
-	print(f"_filesystem: {_filesystem}")
+	return res
+
+def sum_prices_greater_than_threshold(_filesystem: dict, threshold: int=100000) -> int:
+	_folders = _filesystem["folders"]
+	_files_size = _filesystem["files_size"]
+
+	if (len(_folders) == 0):
+		return _files_size if _files_size <= threshold else 0
 	
-	return None
-
-#
-#
-# CICLO for PARA PERCORRER LINHA A LINHA
-# SEM RECURSIVAS
-#
-#
-
-def check_folder(_input: list, curr_folder: str, idx: int=0, filesystem: dict={}, parent_keys: list=[]) -> dict:
-	if (curr_folder == CD_COMMAND_BACK):
-		curr_folder = parent_keys.pop()
-	
-	row = _input[idx]
-
-	print(f"idx: {idx}")
-	print(f"curr_folder: {curr_folder}")
-	print(f"filesystem:\n{filesystem}\n")
-	cd_regex_res = re.search(CD_COMMAND_REGEX, row)
-	if (cd_regex_res is not None):
-		temp = filesystem
+	res = 0
 		
-		for key in parent_keys:
-			temp = temp["folders"][key]
-
-		temp["folders"][curr_folder] = {
-			"folders": {},
-			"files_size": 0
-		}
-		
-		parent_keys.append(curr_folder)
-		return check_folder(
-			_input=_input,
-			curr_folder=cd_regex_res.group(1),
-			idx=idx+1,
-			filesystem=filesystem,
-			parent_keys=parent_keys
+	for folder_key in _folders:
+		res += sum_prices_greater_than_threshold(
+			_filesystem=_folders[folder_key],
+			threshold=threshold
 		)
 	
-	ls_regex_res = re.search(LS_COMMAND_REGEX, row)
-	if (ls_regex_res is not None):
-		while((idx<len(_input)-1) and not re.search(CD_COMMAND_REGEX, _input[idx+1])):
-			idx += 1
-			row = _input[idx]
+	return res + (_files_size if _files_size <= threshold else 0)
 
-			dir_regex_res = re.search(DIR_RES_REGEX, row)
-			if (dir_regex_res is not None):
-				continue
+
+def update_init_filesystem(_filesystem: dict) -> int:
+	_folders = _filesystem["folders"]
+	_files_size = _filesystem["files_size"]
+
+	if (len(_folders) == 0):
+		return _files_size
+	
+	res =_files_size + sum([update_init_filesystem(_filesystem=_folders[f]) for f in _folders])
+	_filesystem["files_size"] = res
+	return res
+
+
+def build_init_filesystem(_input: list) -> dict:
+	filesystem={"folders": {}}
+	len_input = len(_input)
+
+	idx = 0
+	parent_folders=[]
+	while (True):
+
+		###############################
+		###### CD
+		###############################
 		
-			file_regex_res = re.search(FILE_RES_REGEX, row)
-			if (file_regex_res is not None):
+		cd_regex_res = re.search(CD_COMMAND_REGEX, _input[idx])
+		flag_not_increment = False
+		while(cd_regex_res):
+			curr_folder=cd_regex_res.group(1)
+			
+			temp = filesystem["folders"]
+			for key in parent_folders:
+				temp = temp[key]["folders"]
+
+			if (curr_folder == CD_COMMAND_BACK):
+				curr_folder = parent_folders.pop()
+			else:
+				temp[curr_folder] = {"folders": {}, "files_size": 0}
+				parent_folders.append(curr_folder)
+
+			idx += 1
+			if (idx >= len_input):
+				return filesystem
+				
+			cd_regex_res = re.search(CD_COMMAND_REGEX, _input[idx])
+			if (not cd_regex_res):
+				flag_not_increment=True
+
+		
+
+		###############################
+		###### ls
+		###############################
+		
+		ls_regex_res = re.search(LS_COMMAND_REGEX, _input[idx])
+		if (ls_regex_res is not None):
+			while((idx<len_input-1) and not re.search(CD_COMMAND_REGEX, _input[idx+1])):
+				idx += 1
+				row = _input[idx]
+
+				file_regex_res = re.search(FILE_RES_REGEX, row)
+				if (file_regex_res is None):
+					continue
+
 				file_size = int(file_regex_res.group(1))
 
 				temp = filesystem
-				for key in parent_keys:
-					temp = temp["folders"][key]
+				for folder in parent_folders:
+					temp = temp["folders"][folder]
 					
-
 				temp["files_size"] += file_size
-	
-	if (idx >= len(_input)-1):
-		return filesystem
+		
+		if (not flag_not_increment):
+			idx += 1
 
-	return check_folder(
-		_input=_input,
-		curr_folder=curr_folder,
-		idx=idx+1,
-		filesystem=filesystem,
-		parent_keys=parent_keys
-	)
-
-def main_2(filename: str="input.txt") -> int:
-	return None
+		if (idx >= len_input):
+			return filesystem
 
 if __name__ == '__main__':
 	print(main())
-	#print(main_2())
+	#rint(main_2())
