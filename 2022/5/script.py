@@ -5,7 +5,7 @@ def fetch_input(filename: str="input.txt"):
 	return file_content.split('\n\n')
 
 
-def main(filename: str="input.txt") -> int:
+def main(filename: str="input.txt", reverse: bool=False) -> int:
 	_input = fetch_input(filename=filename)
 
 	_board, _labels = parse_input_board(_board=_input[0])
@@ -20,9 +20,10 @@ def main(filename: str="input.txt") -> int:
 		row_from = _board[_from]
 		row_to = _board[to]
 
-		for i in range(move):
-			move_char = row_from.pop()
-			row_to.append(move_char)
+		move_chars = [row_from.pop() for i in range(move)]
+		if (reverse):
+			move_chars.reverse()
+		row_to.extend(move_chars)
 	
 	return "".join([_board[r][-1] for r in _board])
 
@@ -82,24 +83,7 @@ def parse_steps_list(steps: str) -> list:
 
 
 def main_2(filename: str="input.txt") -> int:
-	_input = fetch_input(filename=filename)
-
-	_board, _labels = parse_input_board(_board=_input[0])
-	_steps = parse_steps_list(steps=_input[1])
-	_board = transpose_matrix(matrix=_board)
-	_board = build_labeled_board(board=_board, labels=_labels)
-
-	for step in _steps:
-		move = step["move"]
-		_from = step["from"]
-		to = step["to"]
-		row_from = _board[_from]
-		row_to = _board[to]
-
-		move_chars = [row_from.pop() for i in range(move)]
-		row_to.extend(move_chars[-1:-len(move_chars)-1:-1])
-	
-	return "".join([_board[r][-1] for r in _board])
+	return main(filename=filename, reverse=True)
 
 if __name__ == '__main__':
 	#print(main())
