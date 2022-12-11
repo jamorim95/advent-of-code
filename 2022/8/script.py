@@ -59,44 +59,31 @@ def main_2(filename: str="input.txt") -> int:
 	for row_idx in range(0, len(_input)):
 		for col_idx in range(0, len(_input[0])):
 			curr_value = _input[row_idx][col_idx]
-			print(f"[{row_idx}][{col_idx}] = {curr_value}")
-			scenic_score_horizontal = check_scenic_score(value=curr_value, _set=_input[row_idx], v_idx=col_idx)
-			print(f"scenic_score_horizontal: {scenic_score_horizontal}")
-			scenic_score_vertical = check_scenic_score(value=curr_value, _set=[row[col_idx] for row in _input], v_idx=row_idx)
-			print(f"scenic_score_vertical: {scenic_score_vertical}\n")
-			res.append(scenic_score_vertical*scenic_score_horizontal)
 
-	print(f"res: {res}")
+			_left = _input[row_idx][:col_idx]
+			_left.reverse()
+			scenic_score_left = check_scenic_score(value=curr_value, _set=_left, v_idx=col_idx)
+			
+			scenic_score_right = check_scenic_score(value=curr_value, _set=_input[row_idx][col_idx+1:], v_idx=col_idx, is_up_or_left=False)
+			
+			_up = [row[col_idx] for row in _input[:row_idx]]
+			_up.reverse()
+			scenic_score_up = check_scenic_score(value=curr_value, _set=_up, v_idx=row_idx)
+			
+			scenic_score_down = check_scenic_score(value=curr_value, _set=[row[col_idx] for row in _input[row_idx+1:]], v_idx=row_idx, is_up_or_left=False)
+			
+			res.append(scenic_score_down*scenic_score_up*scenic_score_right*scenic_score_left)
+
 	return max(res)
 
-def check_scenic_score(value: int, _set: list, v_idx: int) -> int:
-	res_lt = 0
-	flag_lt = True
+def check_scenic_score(value: int, _set: list, v_idx: int, is_up_or_left: bool=True) -> int:
+	set_len = len(_set)
 
-	res_gt = 0
-	flag_gt = True
+	for _idx in range(set_len):
+		if (_set[_idx] >= value):
+			return _idx + 1
 
-	# TODO: separar em right, left, up, down
-	
-	print(f"_set: {_set}")
-
-	for _idx in range(len(_set)):
-		if ((_idx == v_idx) and flag_lt):
-			res_lt = v_idx
-			print(f"[EQ] res_lt: {res_lt}")
-			flag_lt = False
-		elif ((_idx < v_idx) and flag_lt and (_set[_idx] >= value)):
-			res_lt += v_idx - _idx
-			print(f"res_lt: {res_lt}")
-			flag_lt = False
-		elif ((_idx > v_idx) and flag_gt and ((_set[_idx] >= value) or (_idx == (len(_set)-1)))):
-			res_gt = _idx - v_idx
-			print(f"res_gt: {res_gt}")
-			flag_gt = False
-
-	print(f"res_lt: {res_lt}")
-	print(f"res_gt: {res_gt}")
-	return res_lt * res_gt
+	return set_len
 
 if __name__ == '__main__':
 	#print(main())
