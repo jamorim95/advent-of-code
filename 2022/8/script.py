@@ -64,13 +64,15 @@ def main_2(filename: str="input.txt") -> int:
 			_left.reverse()
 			scenic_score_left = check_scenic_score(value=curr_value, _set=_left, v_idx=col_idx)
 			
-			scenic_score_right = check_scenic_score(value=curr_value, _set=_input[row_idx][col_idx+1:], v_idx=col_idx, is_up_or_left=False)
+			_right = _input[row_idx][col_idx+1:]
+			scenic_score_right = check_scenic_score(value=curr_value, _set=_right, v_idx=col_idx, is_up_or_left=False)
 			
 			_up = [row[col_idx] for row in _input[:row_idx]]
 			_up.reverse()
 			scenic_score_up = check_scenic_score(value=curr_value, _set=_up, v_idx=row_idx)
 			
-			scenic_score_down = check_scenic_score(value=curr_value, _set=[row[col_idx] for row in _input[row_idx+1:]], v_idx=row_idx, is_up_or_left=False)
+			_down = [row[col_idx] for row in _input[row_idx+1:]]
+			scenic_score_down = check_scenic_score(value=curr_value, _set=_down, v_idx=row_idx, is_up_or_left=False)
 			
 			res.append(scenic_score_down*scenic_score_up*scenic_score_right*scenic_score_left)
 
