@@ -114,6 +114,38 @@ def build_init_filesystem(_input: list) -> dict:
 		if (idx >= len_input):
 			return filesystem
 
+TOTAL_FILESYSTEM_SPACE = 70000000
+def main_2(filename: str="input.txt", min_available_space: int=30000000) -> int:
+	_input = fetch_input(filename=filename)
+
+	_filesystem = build_init_filesystem(_input=_input)
+	for folder_key in _filesystem["folders"]:
+		update_init_filesystem(_filesystem=_filesystem['folders'][folder_key])
+
+	first_folder = list(_filesystem["folders"].keys())[0]
+	total_used_space = _filesystem["folders"][first_folder]["files_size"]
+	total_available_space = TOTAL_FILESYSTEM_SPACE - total_used_space
+
+	if (total_available_space >= min_available_space):
+		return 0
+
+	res = find_min_folders_size(_filesystem_folders=_filesystem["folders"], min_available_space=min_available_space-total_available_space)
+	return min(res)
+
+
+def find_min_folders_size(_filesystem_folders: dict, min_available_space: int) -> list:
+	res = []
+
+	for k,v in _filesystem_folders.items():
+		if (v["files_size"] >= min_available_space):
+			res.append(v["files_size"])
+
+		v_folders = v["folders"]
+		if (len(v_folders) > 0):
+			res.extend(find_min_folders_size(_filesystem_folders=v_folders, min_available_space=min_available_space))
+
+	return res
+
 if __name__ == '__main__':
-	print(main())
-	#rint(main_2())
+	#print(main())
+	print(main_2())
