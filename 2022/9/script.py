@@ -27,8 +27,8 @@ def main(filename: str="input.txt") -> int:
 	for move in _input:
 		direction = move["direction"]
 		steps = move["steps"]
-		print(f"direction: {direction}")
-		print(f"steps: {steps}")
+		#print(f"direction: {direction}")
+		#print(f"steps: {steps}")
 
 		for s in range(steps):
 			if direction == RIGHT_DIRECTION:
@@ -40,14 +40,14 @@ def main(filename: str="input.txt") -> int:
 			elif direction == DOWN_DIRECTION:
 				head_pos = [head_pos[0]+1, head_pos[1]]
 
-			print(f"\tstep {s}")
-			print(f"\tprev_direction {prev_direction}")
-			print(f"\thead_pos {head_pos}")
-			print(f"\ttail_pos {tail_pos}")	
-			print(f"\tknown_positions {known_positions}")	
+			#print(f"\tstep {s}")
+			#print(f"\tprev_direction {prev_direction}")
+			#print(f"\thead_pos {head_pos}")
+			#print(f"\ttail_pos {tail_pos}")	
+			#print(f"\tknown_positions {known_positions}")	
 
 			if (direction != prev_direction):
-				print("\n\n")
+				#print("\n\n")
 				prev_direction = direction
 				continue
 
@@ -55,30 +55,23 @@ def main(filename: str="input.txt") -> int:
 				if head_pos[0]-tail_pos[0]>1:
 					tail_pos[0]=head_pos[0]-1
 					tail_pos[1]=head_pos[1]
-					if tail_pos not in known_positions:
-						known_positions.append([tail_pos[0], tail_pos[1]])
 			elif direction == UP_DIRECTION:
 				if tail_pos[0]-head_pos[0]>1:
 					tail_pos[0]=head_pos[0]+1
 					tail_pos[1]=head_pos[1]
-					if tail_pos not in known_positions:
-						known_positions.append([tail_pos[0], tail_pos[1]])
 			elif direction == LEFT_DIRECTION:
 				if tail_pos[1]-head_pos[1]>1:
 					tail_pos[1]=head_pos[1]+1
 					tail_pos[0]=head_pos[0]
-					if tail_pos not in known_positions:
-						known_positions.append([tail_pos[0], tail_pos[1]])
 			elif direction == RIGHT_DIRECTION:
 				if head_pos[1]-tail_pos[1]>1:
 					tail_pos[1]=head_pos[1]-1
-					if tail_pos[1] < 0:
-						tail_pos[1] += max_steps
 					tail_pos[0]=head_pos[0]
-					if tail_pos not in known_positions:
-						known_positions.append([tail_pos[0], tail_pos[1]])	
-			print(f"\ttail_pos AFTER {tail_pos}")	
-			print(f"\tknown_positions AFTER {known_positions}\n\n")	
+			
+			if tail_pos not in known_positions:
+				known_positions.append([tail_pos[0], tail_pos[1]])
+			#print(f"\ttail_pos AFTER {tail_pos}")	
+			#print(f"\tknown_positions AFTER {known_positions}\n\n")	
 
 	return len(known_positions)
 
