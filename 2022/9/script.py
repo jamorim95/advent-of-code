@@ -15,9 +15,11 @@ def main(filename: str="input.txt") -> int:
 
 	#matrix = [[0 for j in range(max_steps)] for i in range(max_steps)]
 
-	known_positions = [[max_steps-1, 0]]
-	head_pos = [max_steps-1, 0]
-	tail_pos = [max_steps-1, 0]
+	len_input = len(_input)
+	start_pos = [(len_input*max_steps)+1, (len_input*max_steps)+1]
+	known_positions = [start_pos]
+	head_pos = [start_pos[0], start_pos[1]]
+	tail_pos = [start_pos[0], start_pos[1]]
 
 	res = 1
 	prev_direction = None
@@ -30,13 +32,13 @@ def main(filename: str="input.txt") -> int:
 
 		for s in range(steps):
 			if direction == RIGHT_DIRECTION:
-				head_pos = [head_pos[0], min(head_pos[1]+1, max_steps-1)]
+				head_pos = [head_pos[0], head_pos[1]+1]
 			elif direction == LEFT_DIRECTION:
-				head_pos = [head_pos[0], max(head_pos[1]-1, 0)]
+				head_pos = [head_pos[0], head_pos[1]-1]
 			elif direction == UP_DIRECTION:
-				head_pos = [max(head_pos[0]-1, 0), head_pos[1]]
+				head_pos = [head_pos[0]-1, head_pos[1]]
 			elif direction == DOWN_DIRECTION:
-				head_pos = [min(head_pos[0]+1, max_steps-1), head_pos[1]]
+				head_pos = [head_pos[0]+1, head_pos[1]]
 
 			print(f"\tstep {s}")
 			print(f"\tprev_direction {prev_direction}")
@@ -108,4 +110,4 @@ if __name__ == '__main__':
 	print(main())
 	#print(main_2())
 
-# TODO: too low  358
+# TODO: too low  358   5858   
