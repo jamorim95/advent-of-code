@@ -17,6 +17,7 @@ def main(filename: str="input.txt") -> int:
 		update_init_filesystem(_filesystem=_filesystem['folders'][folder_key])
 		res += sum_prices_greater_than_threshold(_filesystem=_filesystem['folders'][folder_key])
 
+	print(f"_filesystem:\n{_filesystem}\n")
 	return res
 
 def sum_prices_greater_than_threshold(_filesystem: dict, threshold: int=100000) -> int:
