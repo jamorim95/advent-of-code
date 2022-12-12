@@ -1,3 +1,9 @@
+import re
+
+RIGHT_DIRECTION = "R"
+LEFT_DIRECTION = "L"
+UP_DIRECTION = "U"
+DOWN_DIRECTION = "D"
 
 def fetch_input(filename: str="input.txt"):
 	file_content = open(filename, 'r').read()
@@ -5,8 +11,88 @@ def fetch_input(filename: str="input.txt"):
 
 def main(filename: str="input.txt") -> int:
 	_input = fetch_input(filename=filename)
+	_input, max_steps = build_input_data(_input=_input)
 
-	return None
+	#matrix = [[0 for j in range(max_steps)] for i in range(max_steps)]
+
+	known_positions = [[max_steps-1, 0]]
+	head_pos = [max_steps-1, 0]
+	tail_pos = [max_steps-1, 0]
+
+	res = 1
+	prev_direction = None
+
+	for move in _input:
+		direction = move["direction"]
+		steps = move["steps"]
+		print(f"direction: {direction}")
+		print(f"steps: {steps}")
+
+		for s in range(steps):
+			if direction == RIGHT_DIRECTION:
+				head_pos = [head_pos[0], head_pos[1]+1]
+			elif direction == LEFT_DIRECTION:
+				head_pos = [head_pos[0], head_pos[1]-1]
+			elif direction == UP_DIRECTION:
+				head_pos = [head_pos[0]-1, head_pos[1]]
+			elif direction == DOWN_DIRECTION:
+				head_pos = [head_pos[0]+1, head_pos[1]]
+
+			print(f"\tstep {s}")
+			print(f"\tprev_direction {prev_direction}")
+			print(f"\thead_pos {head_pos}")
+			print(f"\ttail_pos {tail_pos}")	
+
+			if (direction != prev_direction):
+				prev_direction = direction
+				continue
+
+			if direction == DOWN_DIRECTION:
+				if head_pos[0]-tail_pos[0]>1:
+					tail_pos[0]=head_pos[0]-1
+					tail_pos[1]=head_pos[1]
+					if tail_pos not in known_positions:
+						known_positions.append([tail_pos[0], tail_pos[1]])
+			elif direction == UP_DIRECTION:
+				if tail_pos[0]-head_pos[0]>1:
+					tail_pos[0]=head_pos[0]+1
+					tail_pos[1]=head_pos[1]
+					if tail_pos not in known_positions:
+						known_positions.append([tail_pos[0], tail_pos[1]])
+			elif direction == LEFT_DIRECTION:
+				if tail_pos[1]-head_pos[1]>1:
+					tail_pos[1]=head_pos[1]+1
+					tail_pos[0]=head_pos[0]
+					if tail_pos not in known_positions:
+						known_positions.append([tail_pos[0], tail_pos[1]])
+			elif direction == RIGHT_DIRECTION:
+				if head_pos[1]-tail_pos[1]>1:
+					tail_pos[1]=head_pos[1]-1
+					tail_pos[0]=head_pos[0]
+					if tail_pos not in known_positions:
+						known_positions.append([tail_pos[0], tail_pos[1]])	
+			print(f"\ttail_pos AFTER {tail_pos}\n\n")	
+
+	return len(known_positions)
+
+INPUT_ROW_REGEX = r"([RLUD]{1}) ([0-9]+)"
+def build_input_data(_input: list) -> list:
+	res = []
+	max_steps = 0
+
+	for row in _input:
+		regex_parsed_row = re.search(INPUT_ROW_REGEX, row)
+		curr_steps = int(regex_parsed_row.group(2))
+		res.append(
+			{
+				"direction": regex_parsed_row.group(1),
+				"steps": curr_steps
+			}
+		)
+		max_steps = max(max_steps, curr_steps)
+
+	return res, max_steps
+
 
 def main_2(filename: str="input.txt") -> int:
 	_input = fetch_input(filename=filename)
