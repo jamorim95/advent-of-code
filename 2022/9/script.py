@@ -12,11 +12,9 @@ def fetch_input(filename: str="input.txt"):
 def main(filename: str="input.txt") -> int:
 	_input = fetch_input(filename=filename)
 	_input, max_steps = build_input_data(_input=_input)
-
-	#matrix = [[0 for j in range(max_steps)] for i in range(max_steps)]
-
 	len_input = len(_input)
-	start_pos = [(len_input*max_steps)+1, (len_input*max_steps)+1]
+
+	start_pos = [max_steps-1, 0]
 	known_positions = [start_pos]
 	head_pos = [start_pos[0], start_pos[1]]
 	tail_pos = [start_pos[0], start_pos[1]]
@@ -47,33 +45,55 @@ def main(filename: str="input.txt") -> int:
 			#print(f"\tknown_positions {known_positions}")	
 
 			if (direction != prev_direction):
-				#print("\n\n")
 				prev_direction = direction
 				continue
 
+			flag_tail_change = False
 			if direction == DOWN_DIRECTION:
 				if head_pos[0]-tail_pos[0]>1:
 					tail_pos[0]=head_pos[0]-1
 					tail_pos[1]=head_pos[1]
+					flag_tail_change = True
 			elif direction == UP_DIRECTION:
 				if tail_pos[0]-head_pos[0]>1:
 					tail_pos[0]=head_pos[0]+1
 					tail_pos[1]=head_pos[1]
+					flag_tail_change = True
 			elif direction == LEFT_DIRECTION:
 				if tail_pos[1]-head_pos[1]>1:
 					tail_pos[1]=head_pos[1]+1
 					tail_pos[0]=head_pos[0]
+					flag_tail_change = True
 			elif direction == RIGHT_DIRECTION:
 				if head_pos[1]-tail_pos[1]>1:
 					tail_pos[1]=head_pos[1]-1
 					tail_pos[0]=head_pos[0]
+					flag_tail_change = True
 			
+
+			#print(f"TAIL_POS: {tail_pos}")
 			if tail_pos not in known_positions:
+				#if flag_tail_change:
 				known_positions.append([tail_pos[0], tail_pos[1]])
+			#elif flag_tail_change:
+			#	print(f"known_positions:\n{known_positions}\n\n")
+
 			#print(f"\ttail_pos AFTER {tail_pos}")	
-			#print(f"\tknown_positions AFTER {known_positions}\n\n")	
+		
+	#print(f"\tknown_positions AFTER\n{known_positions}\n\n")	
+	print_matrix(known_positions)
 
 	return len(known_positions)
+
+def print_matrix(known_positions: list):
+	matrix = [["." for j in range(max(known_positions, key=lambda v: v[1])[1]+2)] for i in range(max(known_positions, key=lambda v: v[1])[1]+1)]
+	for m in known_positions:
+		matrix[m[0]][m[1]] = "#"
+	
+	for r in matrix:
+		print(" ".join(r))
+	
+	print("\n")
 
 INPUT_ROW_REGEX = r"([RLUD]{1}) ([0-9]+)"
 def build_input_data(_input: list) -> list:
@@ -103,4 +123,4 @@ if __name__ == '__main__':
 	print(main())
 	#print(main_2())
 
-# TODO: too low  358   5858   
+# TODO: too low  358   5831   5858
