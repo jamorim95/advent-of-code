@@ -62,20 +62,35 @@ def main_2(filename: str="input.txt") -> str:
 
     res_matrix = build_res_matrix(struct=structure)
 
-    #return "\n".join(["".join(m) for m in res_matrix])
-    return res_matrix
+    return "\n".join(["".join(m) for m in res_matrix])
+    #return res_matrix
 
 def build_res_matrix(struct: list) -> list:
     res = []
+    curr_res = []
     _symbols = ["#", "."]
     n_symbols = len(_symbols)
     _symbols_idx = 0
+    count_cycles = 0
+    n_pixels = 2
     for s in struct:
         value = s["value"]
         curr_cycles = s["cycles"]
 
-        res.append(_symbols[_symbols_idx]*curr_cycles)
-        _symbols_idx = (_symbols_idx+1)%n_symbols
+        for c in range(curr_cycles):
+            count_cycles += 1
+
+            if(count_cycles>39):
+                res.append(curr_res)
+                curr_res = []
+                n_pixels += 1
+                _symbols_idx = 0
+                count_cycles = 0
+            else:
+                if ((count_cycles%n_pixels)==0):
+                    _symbols_idx = (_symbols_idx+1)%n_symbols
+            
+            curr_res.append(_symbols[_symbols_idx])
     
     return res
 
