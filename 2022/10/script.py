@@ -6,12 +6,10 @@ def fetch_input(filename: str="input.txt"):
 
 def main(filename: str="input.txt") -> int:
     _input = fetch_input(filename=filename)
-
     structure = build_structure(_input=_input)
 
     return calc_value_for_cycles(structure=structure, cycles=[20, 60, 100, 140, 180, 220], starting_value=1)
 
-# 13140
 def calc_value_for_cycles(structure: list, cycles: list, starting_value: int=1) -> int:
     res = []
     cycles_count = 0
@@ -58,11 +56,31 @@ def build_structure(_input: list) -> list:
     return res
 
 
-def main_2(filename: str="input.txt") -> int:
+def main_2(filename: str="input.txt") -> str:
     _input = fetch_input(filename=filename)
+    structure = build_structure(_input=_input)
 
-    return None
+    res_matrix = build_res_matrix(struct=structure)
+
+    #return "\n".join(["".join(m) for m in res_matrix])
+    return res_matrix
+
+def build_res_matrix(struct: list) -> list:
+    res = []
+    _symbols = ["#", "."]
+    n_symbols = len(_symbols)
+    _symbols_idx = 0
+    for s in struct:
+        value = s["value"]
+        curr_cycles = s["cycles"]
+
+        res.append(_symbols[_symbols_idx]*curr_cycles)
+        _symbols_idx = (_symbols_idx+1)%n_symbols
+    
+    return res
+
+
 
 if __name__ == '__main__':
-    print(main())
-    #print(main_2())
+    #print(main())
+    print(main_2())
