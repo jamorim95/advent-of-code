@@ -80,12 +80,11 @@ def build_res_matrix(struct: list) -> list:
         for c in range(curr_cycles):
             count_cycles += 1
 
-            if(count_cycles>39):
+            if((count_cycles%40)==0):
                 res.append(curr_res)
                 curr_res = []
                 n_pixels += 1
                 _symbols_idx = 0
-                count_cycles = 0
             else:
                 if ((count_cycles%n_pixels)==0):
                     _symbols_idx = (_symbols_idx+1)%n_symbols
