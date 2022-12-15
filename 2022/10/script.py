@@ -60,7 +60,7 @@ def main_2(filename: str="input.txt") -> str:
     _input = fetch_input(filename=filename)
     structure = build_structure(_input=_input)
 
-    res_matrix = build_res_matrix_2(struct=structure)
+    res_matrix = build_res_matrix(struct=structure)
 
     return "\n".join(["".join(m) for m in res_matrix])
 
