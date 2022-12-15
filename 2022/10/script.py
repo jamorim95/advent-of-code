@@ -60,40 +60,43 @@ def main_2(filename: str="input.txt") -> str:
     _input = fetch_input(filename=filename)
     structure = build_structure(_input=_input)
 
-    res_matrix = build_res_matrix(struct=structure)
+    res_matrix = build_res_matrix_2(struct=structure)
 
     return "\n".join(["".join(m) for m in res_matrix])
-    #return res_matrix
 
-def build_res_matrix(struct: list) -> list:
+def build_res_matrix(struct: list, starting_value: int=1) -> list:
     res = []
     curr_res = []
-    _symbols = ["#", "."]
-    n_symbols = len(_symbols)
-    _symbols_idx = 0
     count_cycles = 0
     n_pixels = 2
+    cumulative_count = starting_value
     for s in struct:
         value = s["value"]
         curr_cycles = s["cycles"]
 
+        sprite = update_sprite(x=cumulative_count-1)
         for c in range(curr_cycles):
-            count_cycles += 1
-
-            if((count_cycles%40)==0):
+            if(count_cycles==40):
                 res.append(curr_res)
                 curr_res = []
-                n_pixels += 1
-                _symbols_idx = 0
-            else:
-                if ((count_cycles%n_pixels)==0):
-                    _symbols_idx = (_symbols_idx+1)%n_symbols
-            
-            curr_res.append(_symbols[_symbols_idx])
+                count_cycles = 0
+
+            sprite_value = sprite[count_cycles]
+            curr_res.append("#" if (sprite_value == "#") else ".")
+
+            count_cycles += 1
+        
+        cumulative_count += value
+    
+    if (len(curr_res) > 0):
+        res.append(curr_res)
+        curr_res = []
+        count_cycles = 0
     
     return res
 
-
+def update_sprite(x: int, max_size: int=40) -> list:
+    return ["." for i in range(x)] + ["#", "#", "#"] + ["." for i in range(max_size-x-3)]
 
 if __name__ == '__main__':
     #print(main())
