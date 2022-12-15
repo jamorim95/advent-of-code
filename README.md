@@ -1,3 +1,3 @@
 # advent-of-code
 
-FROM: https://adventofcode.com/2022
+FROM: https://adventofcode.com/
