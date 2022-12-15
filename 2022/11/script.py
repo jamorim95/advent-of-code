@@ -1,4 +1,5 @@
 import re
+import math
 
 def fetch_input(filename: str="input.txt"):
     file_content = open(filename, 'r').read()
@@ -6,8 +7,32 @@ def fetch_input(filename: str="input.txt"):
 
 def main(filename: str="input.txt") -> int:
     _input = fetch_input(filename=filename)
+    structure = build_structures(_input=_input)
 
-    return build_structures(_input=_input)
+    structure = run_rounds(struct=structure, rounds=20)
+
+    return math.prod([s["n_items"] for s in structure])
+
+def run_rounds(struct: list, rounds: int):
+    for r in range(rounds):
+        for monkey in struct:
+            n_items = monkey["n_items"]
+            objects = monkey["starting_items"]
+
+            operation = monkey["operation_new"]
+            operation_op = operation["op"]
+            operation_val = operation["value"]
+
+            test = monkey["test"]
+            test_div_by = test["div_by"]
+            test_true_res = test["true_res"]
+            test_false_res = test["false_res"]
+
+            for obj in objects:
+
+
+            continue
+    return None
 
 MONKEY_HEADER_REGEX = r"Monkey ([0-9]+):"
 STARTING_ITEMS_STARTING = "  Starting items: "
@@ -29,7 +54,7 @@ def build_structures(_input: list) -> list:
             if (curr_monkey_idx is not None):
                 res.append(struct)
             curr_monkey_idx = int(monkey_header_regex_res.group(1))
-            struct = {}
+            struct = {"n_items": 0}
             continue
 
         starting_items_header_res = row.startswith(STARTING_ITEMS_STARTING)
