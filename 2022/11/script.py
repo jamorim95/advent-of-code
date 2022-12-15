@@ -29,7 +29,7 @@ def run_rounds(struct: list, rounds: int):
             test_false_res = test["false_res"]
 
             for obj in objects:
-
+                continue
 
             continue
     return None
