@@ -10,14 +10,19 @@ def main(filename: str="input.txt") -> int:
     structure = build_structures(_input=_input)
 
     structure = run_rounds(struct=structure, rounds=20)
+    for idx in range(len(structure)):
+        print(f"Monkey {idx} inspected items {structure[idx]['n_items']} times.")
 
     return math.prod([s["n_items"] for s in structure])
 
 def run_rounds(struct: list, rounds: int):
+    print_curr_values(struct=struct, round_idx=-2)
     for r in range(rounds):
+        print(f"\tround: {r}")
         for monkey in struct:
             n_items = monkey["n_items"]
-            objects = monkey["starting_items"]
+            starting_items = monkey["starting_items"]
+            print(f"\tn_items: {n_items}")
 
             operation = monkey["operation_new"]
             operation_op = operation["op"]
@@ -28,11 +33,50 @@ def run_rounds(struct: list, rounds: int):
             test_true_res = test["true_res"]
             test_false_res = test["false_res"]
 
-            for obj in objects:
-                continue
+            for obj in starting_items:
+                print(f"\tstarting_item: {obj}")
+                new_value = operation_new_value(value_old=obj, op=operation_op, value_2=operation_val)
+                value_bored = new_value//3
+                print(f"\tnew_value: {new_value}")
+                print(f"\tvalue_bored: {value_bored}")
+                print(f"\ttest_div_by: {test_div_by}")
+                print(f"\t\tTEST: {value_bored%test_div_by}")
+                print(f"\ttest_true_res: {test_true_res}")
+                print(f"\ttest_false_res: {test_false_res}\n\n")
 
-            continue
-    return None
+                if ((value_bored%test_div_by)==0):
+                    struct[test_true_res]["starting_items"].append(value_bored)
+                else:
+                    struct[test_false_res]["starting_items"].append(value_bored)
+
+                n_items += 1            
+
+            monkey["n_items"] = n_items
+
+        print_curr_values(struct=struct, round_idx=r)
+        break
+
+    return struct
+
+def print_curr_values(struct: list, round_idx: int):
+    print(f"\n\nAfter round {round_idx+1}:")
+    for i in range(len(struct)):
+        s = struct[i]
+        print(f"Monkey {i}: {s['starting_items']}")
+
+def operation_new_value(value_old, op: str, value_2) -> int:
+    v2 = value_old if (value_2=="old") else value_2
+
+    if (op=="+"):
+        return value_old + v2
+    elif (op=="-"):
+        return value_old - v2
+    elif (op=="*"):
+        return value_old * v2
+    elif (op=="/"):
+        return value_old // v2
+    
+    return 0
 
 MONKEY_HEADER_REGEX = r"Monkey ([0-9]+):"
 STARTING_ITEMS_STARTING = "  Starting items: "
