@@ -18,9 +18,10 @@ def main(filename: str="input.txt", n_top: int=2) -> int:
     n_items_list.reverse()
     return math.prod(n_items_list[:n_top])
 
-def run_rounds(struct: list, rounds: int):
+def run_rounds(struct: list, rounds: int, divide: bool=True):
     #print_curr_values(struct=struct, round_idx=-1)
     for r in range(rounds):
+        print(f"ROUND: {r}")
         for m in range(len(struct)):
             monkey = struct[m]
             n_items = monkey["n_items"]
@@ -39,7 +40,9 @@ def run_rounds(struct: list, rounds: int):
             while(len(starting_items)>0):
                 obj = starting_items.pop()
                 new_value = operation_new_value(value_old=obj, op=operation_op, value_2=operation_val)
-                value_bored = new_value//3
+                value_bored = new_value
+                if(divide):
+                    value_bored = value_bored//3
 
                 if ((value_bored%test_div_by)==0):
                     struct[test_true_res]["starting_items"].append(value_bored)
@@ -135,11 +138,19 @@ def build_structures(_input: list) -> list:
     return res
 
 
-def main_2(filename: str="input.txt") -> str:
+def main_2(filename: str="input.txt", n_top: int=2) -> int:
     _input = fetch_input(filename=filename)
-    
-    return None
+    structure = build_structures(_input=_input)
+
+    structure = run_rounds(struct=structure, rounds=10000, divide=False)
+    for idx in range(len(structure)):
+        print(f"Monkey {idx} inspected items {structure[idx]['n_items']} times.")
+
+    n_items_list = [s["n_items"] for s in structure]
+    n_items_list.sort()
+    n_items_list.reverse()
+    return math.prod(n_items_list[:n_top])
 
 if __name__ == '__main__':
-    print(main())
-    #print(main_2())
+    #print(main())
+    print(main_2())
