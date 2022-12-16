@@ -5,11 +5,11 @@ def fetch_input(filename: str="input.txt"):
     file_content = open(filename, 'r').read()
     return file_content.split('\n')
 
-def main(filename: str="input.txt", n_top: int=2) -> int:
+def main(filename: str="input.txt", n_top: int=2, rounds: int=20, divide: int=3) -> int:
     _input = fetch_input(filename=filename)
     structure = build_structures(_input=_input)
 
-    structure = run_rounds(struct=structure, rounds=20)
+    structure = run_rounds(struct=structure, rounds=rounds, divide=divide)
     for idx in range(len(structure)):
         print(f"Monkey {idx} inspected items {structure[idx]['n_items']} times.")
 
@@ -18,7 +18,7 @@ def main(filename: str="input.txt", n_top: int=2) -> int:
     n_items_list.reverse()
     return math.prod(n_items_list[:n_top])
 
-def run_rounds(struct: list, rounds: int, divide: bool=True):
+def run_rounds(struct: list, rounds: int, divide: int=3):
     #print_curr_values(struct=struct, round_idx=-1)
     for r in range(rounds):
         print(f"ROUND: {r}")
@@ -40,9 +40,7 @@ def run_rounds(struct: list, rounds: int, divide: bool=True):
             while(len(starting_items)>0):
                 obj = starting_items.pop()
                 new_value = operation_new_value(value_old=obj, op=operation_op, value_2=operation_val)
-                value_bored = new_value
-                if(divide):
-                    value_bored = value_bored//3
+                value_bored = new_value//divide
 
                 if ((value_bored%test_div_by)==0):
                     struct[test_true_res]["starting_items"].append(value_bored)
@@ -137,19 +135,31 @@ def build_structures(_input: list) -> list:
     res.append(struct)
     return res
 
-
+# TODO: TARGET=2713310158
+# divide 10 -> 9995400525
+# divide 5  -> 2500000000
+# divide 4  -> 2500000000
+# divide 3  -> _TIMEOUT_
 def main_2(filename: str="input.txt", n_top: int=2) -> int:
-    _input = fetch_input(filename=filename)
-    structure = build_structures(_input=_input)
+    #_input = fetch_input(filename=filename)
+    #structure = build_structures(_input=_input)
 
-    structure = run_rounds(struct=structure, rounds=10000, divide=False)
-    for idx in range(len(structure)):
-        print(f"Monkey {idx} inspected items {structure[idx]['n_items']} times.")
+    #structure = run_rounds(struct=structure, rounds=10000, divide=3)
+    #for idx in range(len(structure)):
+    #    print(f"Monkey {idx} inspected items {structure[idx]['n_items']} times.")
 
-    n_items_list = [s["n_items"] for s in structure]
-    n_items_list.sort()
-    n_items_list.reverse()
-    return math.prod(n_items_list[:n_top])
+    #n_items_list = [s["n_items"] for s in structure]
+    #n_items_list.sort()
+    #n_items_list.reverse()
+    #return math.prod(n_items_list[:n_top])
+
+    # TODO: map values to range of smaller values ?
+    return main(
+        filename=filename,
+        n_top=n_top,
+        rounds=10000,
+        divide=3
+    )
 
 if __name__ == '__main__':
     #print(main())
