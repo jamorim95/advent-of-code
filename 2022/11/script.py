@@ -136,6 +136,7 @@ def build_structures(_input: list) -> list:
     return res
 
 # TODO: TARGET=2713310158
+# divide 100-> 9998500036
 # divide 10 -> 9995400525
 # divide 9  -> 9995500500
 # divide 8  -> 9993800957
@@ -162,7 +163,7 @@ def main_2(filename: str="input.txt", n_top: int=2) -> int:
         filename=filename,
         n_top=n_top,
         rounds=10000,
-        divide=1
+        divide=100
     )
 
 if __name__ == '__main__':
