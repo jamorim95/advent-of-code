@@ -162,8 +162,8 @@ def main_2(filename: str="input.txt", n_top: int=2) -> int:
     return main(
         filename=filename,
         n_top=n_top,
-        rounds=10000,
-        divide=100
+        rounds=20,
+        divide=3
     )
 
 if __name__ == '__main__':
